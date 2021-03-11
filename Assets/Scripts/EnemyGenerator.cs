@@ -7,6 +7,7 @@ public class EnemyGenerator : MonoBehaviour
     public GameObject prefab;
     float loading = 0;
     public float delay;
+    public int maximum;
 
 
     void Update()
@@ -14,8 +15,15 @@ public class EnemyGenerator : MonoBehaviour
         loading += Time.deltaTime;
         if (loading > delay)
         {
-            Instantiate(prefab, gameObject.transform);
-            loading = 0;
+            if (GameObject.FindGameObjectsWithTag("Enemy").Length <= maximum)
+            {
+                Instantiate(prefab, gameObject.transform);
+                loading = 0;
+            }
+            else
+            {
+                loading = 0;
+            }
         }
     }
 }

@@ -4,63 +4,22 @@ using UnityEngine;
 
 public class Pathfinding : MonoBehaviour
 {
-    public int gridWidth;
-    public int gridHeight;
-
-    public GameObject prefab;
-
     public GraphNode[] tiles;
-
     public GraphNode[] navigatingTo;
     public float navigationSpeed;
     public float destinationThreshold;
 
-    int nodeProgress = 0;
+
+    public bool pathfinding;
+
+    public int nodeProgress = 0;
+    public float destinationDist;
 
     private void Start()
     {
+        pathfinding = true;
         nodeProgress = -1;
-        tiles = new GraphNode[gridWidth * gridHeight];
-
-        Vector3 offset = Vector3.zero;
-
-        for (int i = 0; i < gridHeight; ++i)
-        {
-            for (int j = 0; j < gridWidth; ++j)
-            {
-                GameObject newTile = Instantiate(prefab, transform.position + offset, transform.rotation);
-                tiles[i * gridWidth + j] = newTile.GetComponent<GraphNode>();
-                newTile.name = (i * gridWidth + j).ToString();
-                offset.x += 1.5f;
-            }
-
-            offset.x = 0.0f;
-            offset.z += 1.5f;
-        }
-
-        for (int i = 0; i < tiles.Length; ++i)
-        {
-            List<GraphNode> connectedNodes = new List<GraphNode>();
-
-            if (i % gridWidth != 0)
-            {
-                connectedNodes.Add(tiles[i - 1]);
-            }
-            if ((i + 1) % gridWidth != 0)
-            {
-                connectedNodes.Add(tiles[i + 1]);
-            }
-            if (i < gridWidth * gridHeight - gridWidth)
-            {
-                connectedNodes.Add(tiles[i + gridWidth]);
-            }
-            if (i > gridWidth)
-            {
-                connectedNodes.Add(tiles[i - gridWidth]);
-            }
-
-            tiles[i].connections = connectedNodes.ToArray();
-        }
+        tiles = GameObject.Find("node grid").GetComponent<NodeGrid>().tiles;
     }
 
     GraphNode GetCheapestTile(GraphNode[] nodes)
@@ -83,12 +42,6 @@ public class Pathfinding : MonoBehaviour
         {
             Debug.Log("choosing from empty");
         }
-
-        if(bestNode == null)
-        {
-            Debug.Log("it is not fixed yet");
-        }
-
         return bestNode;
     }
 
@@ -101,11 +54,13 @@ public class Pathfinding : MonoBehaviour
 
     void Update()
     {
-        if (navigatingTo.Length != 0 && nodeProgress != -1)
+        if (navigatingTo.Length != 0 && nodeProgress != -1 && pathfinding)
         {
-            gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, navigatingTo[nodeProgress].gameObject.transform.position, Time.deltaTime);
+            gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, navigatingTo[nodeProgress].gameObject.transform.position, Time.deltaTime * navigationSpeed);
 
-            if ((gameObject.transform.position - navigatingTo[nodeProgress].gameObject.transform.position).magnitude < destinationThreshold)
+            destinationDist = (gameObject.transform.position - navigatingTo[nodeProgress].gameObject.transform.position).magnitude;
+
+            if (destinationDist < destinationThreshold)
             {
                 nodeProgress--;
             }
@@ -182,8 +137,10 @@ public class Pathfinding : MonoBehaviour
         {
             path.Add(destinationNode);
             h++;
-            destinationNode = destinationNode.previous;
-
+            if (destinationNode.previous)
+            {
+                destinationNode = destinationNode.previous;
+            }
         }
         return path.ToArray();
     }

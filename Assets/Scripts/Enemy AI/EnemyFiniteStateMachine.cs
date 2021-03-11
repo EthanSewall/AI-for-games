@@ -7,24 +7,17 @@ public class EnemyFiniteStateMachine : MonoBehaviour
     public enum States {Chase, OpenFire, Melee }
     public States currentState;
 
-    public int startRange;
-    public int endRange;
-    public int meleeRange;
-    public int moveSpeed;
-
-    public GameObject prefab;
-    public float reloadSpeed;
-    float delay;
-
-    float distance;
-
-    public int maxHealth;
-    int currentHealth;
+    public int startRange; public int endRange; public int meleeRange; public int moveSpeed; public GameObject prefab;
+    public float reloadSpeed; float delay; float distance; public int maxHealth; int currentHealth;
+    Pathfinding path; NodeGrid grid; float pathingDelay;
 
     void Start()
     {
+        path = gameObject.GetComponent<Pathfinding>();
+        grid = GameObject.Find("node grid").GetComponent<NodeGrid>();
         currentHealth = maxHealth;
         delay = 0;
+        pathingDelay = 0;
     }
 
     void Update()
@@ -34,16 +27,39 @@ public class EnemyFiniteStateMachine : MonoBehaviour
         {
             case States.Chase:
                 {
-                    gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, GameObject.Find("player").transform.position, moveSpeed * Time.deltaTime);
+                    if(!path.pathfinding)
+                    {
+                        path.pathfinding = true;
+                    }
+
+                    pathingDelay += Time.deltaTime;
+                    if(pathingDelay > 1f)
+                    {
+                        if (path.navigatingTo.Length == 0)
+                        {
+                            path.SetDestination(grid.PlayerLocation());
+                            pathingDelay = 0;
+                        }
+                        else
+                        {
+                            if(!(grid.PlayerLocation() == path.navigatingTo[0]))
+                            {
+                                path.SetDestination(grid.PlayerLocation());
+                            }
+                            pathingDelay = 0;
+                        }
+                    }
 
                     if(distance < startRange)
                     {
+                        path.pathfinding = false;
                         currentState = States.OpenFire;
                     }
                 }
                 break;
             case States.OpenFire:
                 {
+                    transform.LookAt(GameObject.Find("player").transform);
                     delay += Time.deltaTime;
                     if (delay > reloadSpeed)
                     {
