@@ -4,31 +4,46 @@ using UnityEngine;
 
 public class projectile : MonoBehaviour
 {
-
-    bool playerProjectile;
-
     public int damage;
+    float despawn = 0;
 
-    void Start()
+    void Update()
     {
-        playerProjectile = true;
+        despawn += Time.deltaTime;
+        if(despawn > 8)
+        {
+            Destroy(gameObject);
+        }
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        if(playerProjectile && collision.gameObject.tag == "Enemy")
+        if(gameObject.layer == 10 && collision.gameObject.tag == "Enemy")
         {
             collision.gameObject.GetComponent<EnemyFiniteStateMachine>().TakeDamage(damage);
+            Destroy(gameObject);
         }
-        if (!playerProjectile && collision.gameObject.tag == "Player")
+        else if (gameObject.layer == 11 && collision.gameObject.tag == "Player")
         {
             collision.gameObject.GetComponent<PlayerController>().TakeDamage(damage);
+            Destroy(gameObject);
         }
-        Destroy(gameObject);
+        else if(collision.gameObject.layer == 12)
+        {
+            Destroy(gameObject);
+        }
     }
 
     public void SetProjectile(bool h)
     {
-        playerProjectile = h;
+        if(h)
+        {
+            gameObject.layer = 10;
+        }
+        else
+        {
+            gameObject.layer = 11;
+        }
+        GetComponent<SphereCollider>().enabled = true;
     }
 }

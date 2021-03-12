@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class PlayerController : MonoBehaviour
     int currentHP;
     GameObject hinge;
     Rigidbody rigid;
+    GameObject gauge;
 
     void Start()
     {
@@ -18,6 +20,7 @@ public class PlayerController : MonoBehaviour
         hinge = GameObject.Find("x-hinge");
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        gauge = GameObject.Find("gauge");
     }
     void Update()
     {
@@ -43,10 +46,16 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        gauge.transform.localScale = new Vector3(1, 1.5f, 1);
+
+        gauge.transform.localScale = new Vector3(((float)currentHP / (float)maxHP) * 10, 1.5f, 1);
+
         currentHP -= damage;
         if (currentHP <= 0)
         {
-            Destroy(gameObject);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            SceneManager.LoadSceneAsync(1);
         }
     }
 }

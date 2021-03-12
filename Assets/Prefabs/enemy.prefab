@@ -109,8 +109,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: 0
-  startRange: 15
-  endRange: 20
+  startRange: 20
+  endRange: 30
   meleeRange: 3
   moveSpeed: 5
   prefab: {fileID: 6947814982950614724, guid: 4262ea9cd07da1247929a8cc9cc0b085, type: 3}
