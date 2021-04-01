@@ -67,7 +67,7 @@ public class EnemyFiniteStateMachine : MonoBehaviour
                         GameObject obj = Instantiate(prefab, gameObject.transform);
                         obj.transform.LookAt(GameObject.Find("player").transform);
                         obj.GetComponent<Rigidbody>().AddRelativeForce(0, 0, 1000);
-                        obj.GetComponent<projectile>().SetProjectile(false);
+                        obj.GetComponent<Projectile>().SetProjectile(false);
                     }
 
                     if (distance < meleeRange)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class playerLauncher : MonoBehaviour
+public class PlayerLauncher : MonoBehaviour
 {
     public float reloadSpeed;
     float delay = 0;
@@ -18,7 +18,7 @@ public class playerLauncher : MonoBehaviour
             GameObject obj = Instantiate(prefab, gameObject.transform);
             obj.transform.SetPositionAndRotation(gameObject.transform.position, gameObject.transform.rotation);
             obj.GetComponent<Rigidbody>().AddRelativeForce(0, 0, 1500);
-            obj.GetComponent<projectile>().SetProjectile(true);
+            obj.GetComponent<Projectile>().SetProjectile(true);
             obj.transform.parent = null;
         }
     }
